@@ -27,9 +27,9 @@ namespace Cuiliang.AliyunOssSdk
         private RequestContext _requestContext = null;
 
         public OssClient(OssCredential credential)
-            :this(credential, ClientConfiguration.Default)
+            : this(credential, ClientConfiguration.Default)
         {
-            
+
         }
 
         public OssClient(OssCredential credential, ClientConfiguration config)
@@ -43,7 +43,7 @@ namespace Cuiliang.AliyunOssSdk
         /// <returns></returns>
         public async Task<OssResult<ListBucketsResult>> ListBucketsAsync(string region)
         {
-            
+
             var cmd = new ListBucketCommand(_requestContext, region, new ListBucketsRequest());
             return await cmd.ExecuteAsync();
         }
@@ -58,7 +58,6 @@ namespace Cuiliang.AliyunOssSdk
         public async Task<OssResult<PutObjectResult>> PutObjectAsync(BucketInfo bucket, string key, RequestContent file)
         {
             var cmd = new PutObjectCommand(_requestContext, bucket, key, file, null);
-
             return await cmd.ExecuteAsync();
         }
 
@@ -89,8 +88,7 @@ namespace Cuiliang.AliyunOssSdk
         /// <param name="key"></param>
         /// <param name="filePathName"></param>
         /// <returns></returns>
-        public async Task<OssResult<PutObjectResult>> PutObjectByFileNameAsync(BucketInfo bucket, string key,
-            string filePathName)
+        public async Task<OssResult<PutObjectResult>> PutObjectByFileNameAsync(BucketInfo bucket, string key, string filePathName)
         {
             using (var stream = File.OpenRead(filePathName))
             {
@@ -106,6 +104,24 @@ namespace Cuiliang.AliyunOssSdk
         }
 
         /// <summary>
+        /// Upload stream.
+        /// </summary>
+        /// <param name="bucket"></param>
+        /// <param name="key"></param>
+        /// <param name="filePathName"></param>
+        /// <returns></returns>
+        public async Task<OssResult<PutObjectResult>> PutObjectByStreamAsync(BucketInfo bucket, string key, string mimeType, Stream stream)
+        {
+            var file = new RequestContent()
+            {
+                ContentType = RequestContentType.Stream,
+                StreamContent = stream,
+                MimeType = mimeType
+            };
+            return await PutObjectAsync(bucket, key, file);
+        }
+
+        /// <summary>
         /// 复制对象
         /// </summary>
         /// <param name="bucket"></param>
@@ -114,9 +130,9 @@ namespace Cuiliang.AliyunOssSdk
         /// <param name="targetKey"></param>
         /// <param name="extraHeaders"></param>
         /// <returns></returns>
-        public async Task<OssResult<CopyObjectResult>> CopyObjectAsync(BucketInfo bucket, string srcKey, 
+        public async Task<OssResult<CopyObjectResult>> CopyObjectAsync(BucketInfo bucket, string srcKey,
             BucketInfo targetBucket,
-            string targetKey, 
+            string targetKey,
             IDictionary<string, string> extraHeaders = null)
         {
             var cmd = new CopyObjectCommand(_requestContext, targetBucket, targetKey, bucket, srcKey, extraHeaders);
