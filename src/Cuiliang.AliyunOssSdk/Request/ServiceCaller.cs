@@ -123,7 +123,10 @@ namespace Cuiliang.AliyunOssSdk.Request
 
             // 需要增加是因为objectMeta和head API返回的消息体是空的，但是content-length却是实际object的长度，此处违反了协议。
             // 使用默认参数会自动读取content，导致异常。
-            return await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            using (client)
+            {
+                return await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            }
         }
     }
 }
